@@ -2,15 +2,16 @@ export default function ErrorMessage({ message }) {
   if (!message) return null
   return (
     <div style={{
-      background: 'rgba(239,68,68,0.1)',
-      border: '1px solid rgba(239,68,68,0.3)',
-      color: '#fca5a5',
-      padding: '0.75rem 1rem',
-      borderRadius: '8px',
-      fontSize: '0.875rem',
-      marginBottom: '1rem',
+      border: '1px solid rgba(255,51,51,0.3)',
+      background: 'rgba(255,51,51,0.04)',
+      padding: '0.65rem 0.9rem',
+      marginBottom: '1.25rem',
+      fontSize: '0.65rem',
+      fontFamily: "'Share Tech Mono', monospace",
+      letterSpacing: '0.08em',
+      color: '#ff3333',
     }}>
-      {message}
+      ✕ {message.toUpperCase()}
     </div>
   )
 }

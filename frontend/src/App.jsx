@@ -10,7 +10,6 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
-import ProductsPage from './pages/ProductsPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import AdminPage from './pages/AdminPage'
 
@@ -33,14 +32,12 @@ export default function App() {
   const { initialized } = useAuth()
 
   useEffect(() => {
-    // Restore session on load
     supabase.auth.getSession().then(({ data: { session } }) => {
       dispatch(setSession(session))
       if (session) dispatch(fetchCurrentUser())
       dispatch(setInitialized())
     })
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       dispatch(setSession(session))
       if (session) dispatch(fetchCurrentUser())
@@ -59,12 +56,11 @@ export default function App() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
         <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
       </Routes>
-    </> 
+    </>
   )
 }
