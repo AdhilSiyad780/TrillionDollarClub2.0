@@ -140,7 +140,7 @@ export default function HomePage() {
     e.preventDefault()
     dispatch(fetchProducts({ page: 1, search }))
   }
-
+  console.log(isAdmin,'the status of the user')
   const handleDelete = async (e, id) => {
     e.preventDefault()
     e.stopPropagation()
