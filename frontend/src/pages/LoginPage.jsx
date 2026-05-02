@@ -5,9 +5,8 @@ import {
   signIn, fetchCurrentUser,
   selectAuthLoading, selectAuthError, clearError
 } from '../features/auth/authSlice'
+import { supabase } from '../services/supabase'
 import toast from 'react-hot-toast'
-import { supabase } from '../services/supabase' // make sure this exists
-
 
 export default function LoginPage() {
   const dispatch = useDispatch()
@@ -28,36 +27,33 @@ export default function LoginPage() {
     if (signIn.fulfilled.match(result)) {
       await dispatch(fetchCurrentUser())
       toast.success('ACCESS GRANTED')
-      navigate('/dashboard')
+      navigate('/')
     }
   }
 
   const handleGoogleLogin = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: window.location.origin + '/dashboard'
-    }
-  })
-
-  if (error) {
-    toast.error(error.message)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/' }
+    })
+    if (error) toast.error(error.message)
   }
-}
 
   const inputStyle = (name) => ({
     width: '100%',
     background: '#000',
     border: '1px solid',
     borderColor: focused === name ? '#fff' : error ? '#ff333344' : '#1a1a1a',
-    padding: '0.85rem 1rem',
+    padding: '0.8rem 0.9rem',
     color: '#fff',
     fontSize: '0.8rem',
     fontFamily: "'Share Tech Mono', monospace",
-    letterSpacing: '0.06em',
+    letterSpacing: '0.04em',
     transition: 'border-color 0.15s',
     display: 'block',
     outline: 'none',
+    WebkitAppearance: 'none',
+    borderRadius: 0,
   })
 
   return (
@@ -66,104 +62,127 @@ export default function LoginPage() {
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
 
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
+          from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes blink {
           0%, 100% { opacity: 1; }
-          50%       { opacity: 0; }
+          50% { opacity: 0; }
         }
+
+        .login-wrap {
+          min-height: 100vh;
+          min-height: 100dvh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #000;
+          padding: 1rem;
+        }
+
         .login-card {
-          animation: fadeUp 0.35s ease forwards;
+          width: 100%;
+          max-width: 400px;
+          background: #000;
+          border: 1px solid #1a1a1a;
+          padding: 1.75rem 1.25rem;
+          position: relative;
+          animation: fadeUp 0.3s ease forwards;
         }
+
+        @media (min-width: 480px) {
+          .login-card { padding: 2.5rem 2rem; }
+        }
+
+        .login-submit {
+          width: 100%;
+          padding: 0.85rem;
+          background: transparent;
+          border: 1px solid #fff;
+          color: #fff;
+          fontSize: 0.7rem;
+          font-family: 'Share Tech Mono', monospace;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          transition: all 0.15s;
+          cursor: pointer;
+          font-size: 0.7rem;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .login-submit:active:not(:disabled),
         .login-submit:hover:not(:disabled) {
-          background: #fff !important;
-          color: #000 !important;
+          background: #fff;
+          color: #000;
         }
         .login-submit:disabled {
           opacity: 0.4;
           cursor: not-allowed;
         }
-        .login-link:hover {
-          color: #fff !important;
+
+        .google-btn {
+          width: 100%;
+          padding: 0.85rem;
+          background: #fff;
+          border: 1px solid #fff;
+          color: #000;
+          font-family: 'Share Tech Mono', monospace;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          font-size: 0.7rem;
+          cursor: pointer;
+          transition: all 0.15s;
+          -webkit-tap-highlight-color: transparent;
         }
+        .google-btn:active { background: #ddd; }
+
+        .login-link:hover,
+        .login-link:active { color: #fff !important; }
+
+        /* Remove iOS input styling */
+        input { -webkit-appearance: none; border-radius: 0; }
       `}</style>
 
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#000',
-        padding: '1.5rem',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
+      <div className="login-wrap">
 
-        {/* Background grid */}
+        {/* Subtle background grid — hidden on very small screens */}
         <div style={{
-          position: 'absolute',
+          position: 'fixed',
           inset: 0,
           backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
+            linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px',
           pointerEvents: 'none',
         }} />
 
-        {/* Corner decorations */}
-        {['top:0;left:0', 'top:0;right:0', 'bottom:0;left:0', 'bottom:0;right:0'].map((pos, i) => (
-          <div key={i} style={{
-            position: 'absolute',
-            ...Object.fromEntries(pos.split(';').map(p => p.split(':'))),
-            width: 60, height: 60,
-            borderTop: i < 2 ? '1px solid #1a1a1a' : 'none',
-            borderBottom: i >= 2 ? '1px solid #1a1a1a' : 'none',
-            borderLeft: i % 2 === 0 ? '1px solid #1a1a1a' : 'none',
-            borderRight: i % 2 === 1 ? '1px solid #1a1a1a' : 'none',
-            pointerEvents: 'none',
-          }} />
-        ))}
-
-        {/* Card */}
-        <div className="login-card" style={{
-          width: '100%',
-          maxWidth: '400px',
-          background: '#000',
-          border: '1px solid #1a1a1a',
-          padding: 'clamp(1.5rem, 5vw, 2.5rem)',
-          position: 'relative',
-          zIndex: 1,
-        }}>
+        <div className="login-card">
 
           {/* Header */}
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.75rem' }}>
             <div style={{
-              fontSize: '0.55rem',
+              fontSize: '0.52rem',
               fontFamily: "'Share Tech Mono', monospace",
-              letterSpacing: '0.2em',
+              letterSpacing: '0.18em',
               color: '#333',
               textTransform: 'uppercase',
-              marginBottom: '1rem',
+              marginBottom: '0.85rem',
             }}>
               TRILLIONDOLLARCLUB / AUTH
             </div>
             <h1 style={{
               fontFamily: "'Orbitron', monospace",
-              fontSize: 'clamp(1.3rem, 5vw, 1.75rem)',
+              fontSize: 'clamp(1.2rem, 6vw, 1.65rem)',
               fontWeight: 900,
-              letterSpacing: '0.06em',
+              letterSpacing: '0.05em',
               textTransform: 'uppercase',
-              marginBottom: '0.4rem',
               lineHeight: 1.1,
+              marginBottom: '0.5rem',
             }}>
-              Access
-              <br />
-              Terminal
+              Access<br />Terminal
             </h1>
             <div style={{
-              fontSize: '0.65rem',
+              fontSize: '0.6rem',
               fontFamily: "'Share Tech Mono', monospace",
               letterSpacing: '0.1em',
               color: '#333',
@@ -178,12 +197,13 @@ export default function LoginPage() {
             <div style={{
               border: '1px solid rgba(255,51,51,0.3)',
               background: 'rgba(255,51,51,0.04)',
-              padding: '0.65rem 0.9rem',
+              padding: '0.6rem 0.85rem',
               marginBottom: '1.25rem',
-              fontSize: '0.65rem',
+              fontSize: '0.62rem',
               fontFamily: "'Share Tech Mono', monospace",
-              letterSpacing: '0.08em',
+              letterSpacing: '0.06em',
               color: '#ff3333',
+              wordBreak: 'break-word',
             }}>
               ✕ {error.toUpperCase()}
             </div>
@@ -191,15 +211,15 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '0.85rem' }}>
               <label style={{
                 display: 'block',
-                fontSize: '0.55rem',
+                fontSize: '0.52rem',
                 fontFamily: "'Share Tech Mono', monospace",
-                letterSpacing: '0.18em',
+                letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 color: focused === 'email' ? '#888' : '#333',
-                marginBottom: '0.4rem',
+                marginBottom: '0.35rem',
                 transition: 'color 0.15s',
               }}>
                 Email Address
@@ -215,18 +235,19 @@ export default function LoginPage() {
                 placeholder="operative@domain.com"
                 required
                 autoComplete="email"
+                inputMode="email"
               />
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '1.25rem' }}>
               <label style={{
                 display: 'block',
-                fontSize: '0.55rem',
+                fontSize: '0.52rem',
                 fontFamily: "'Share Tech Mono', monospace",
-                letterSpacing: '0.18em',
+                letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 color: focused === 'password' ? '#888' : '#333',
-                marginBottom: '0.4rem',
+                marginBottom: '0.35rem',
                 transition: 'color 0.15s',
               }}>
                 Password
@@ -249,59 +270,49 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="login-submit"
-              style={{
-                width: '100%',
-                padding: '0.9rem',
-                background: 'transparent',
-                border: '1px solid #fff',
-                color: '#fff',
-                fontSize: '0.7rem',
-                fontFamily: "'Share Tech Mono', monospace",
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                transition: 'all 0.15s',
-                marginBottom: '1.5rem',
-              }}
+              style={{ marginBottom: '0.75rem' }}
             >
-              {loading
-                ? '— AUTHENTICATING —'
-                : '→ INITIATE ACCESS'}
+              {loading ? '— AUTHENTICATING —' : '→ INITIATE ACCESS'}
             </button>
           </form>
-          {/* GOOGLE LOGIN */}
-<button
-  type="button"
-  onClick={handleGoogleLogin}
-  style={{
-    width: '100%',
-    padding: '0.9rem',
-    background: '#fff',
-    border: 'none',
-    color: '#000',
-    fontSize: '0.7rem',
-    fontFamily: "'Share Tech Mono', monospace",
-    letterSpacing: '0.18em',
-    textTransform: 'uppercase',
-    marginBottom: '1.5rem',
-    cursor: 'pointer'
-  }}
->
-  → Continue with Google
-</button>
 
           {/* Divider */}
           <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            marginBottom: '0.75rem',
+          }}>
+            <div style={{ flex: 1, height: '1px', background: '#111' }} />
+            <span style={{ fontSize: '0.5rem', fontFamily: "'Share Tech Mono', monospace", color: '#333', letterSpacing: '0.1em' }}>OR</span>
+            <div style={{ flex: 1, height: '1px', background: '#111' }} />
+          </div>
+
+          {/* Google */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="google-btn"
+            style={{ marginBottom: '1.5rem' }}
+          >
+            G — Continue with Google
+          </button>
+
+          {/* Footer */}
+          <div style={{
             borderTop: '1px solid #111',
-            paddingTop: '1.25rem',
+            paddingTop: '1.1rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            gap: '0.5rem',
           }}>
             <span style={{
-              fontSize: '0.6rem',
+              fontSize: '0.55rem',
               fontFamily: "'Share Tech Mono', monospace",
-              letterSpacing: '0.1em',
+              letterSpacing: '0.08em',
               color: '#333',
+              flexShrink: 0,
             }}>
               NO CREDENTIALS?
             </span>
@@ -309,14 +320,15 @@ export default function LoginPage() {
               to="/signup"
               className="login-link"
               style={{
-                fontSize: '0.6rem',
+                fontSize: '0.55rem',
                 fontFamily: "'Share Tech Mono', monospace",
-                letterSpacing: '0.12em',
+                letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 color: '#555',
                 borderBottom: '1px solid #222',
                 paddingBottom: '1px',
                 transition: 'color 0.15s',
+                flexShrink: 0,
               }}
             >
               Request Access →

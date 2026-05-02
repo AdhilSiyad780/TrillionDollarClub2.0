@@ -36,17 +36,15 @@ export default function SignupPage() {
     }
   }
 
-  // Password strength
   const strength = (() => {
     const p = form.password
     if (!p) return null
-    if (p.length < 6) return { label: 'WEAK', width: '25%', color: '#ff3333' }
-    if (p.length < 10) return { label: 'FAIR', width: '55%', color: '#ffcc00' }
-    if (p.length < 14) return { label: 'STRONG', width: '80%', color: '#33ff88' }
-    return { label: 'MAXIMUM', width: '100%', color: '#fff' }
+    if (p.length < 6)  return { label: 'WEAK',    width: '25%',  color: '#ff3333' }
+    if (p.length < 10) return { label: 'FAIR',    width: '55%',  color: '#ffcc00' }
+    if (p.length < 14) return { label: 'STRONG',  width: '80%',  color: '#33ff88' }
+    return               { label: 'MAXIMUM', width: '100%', color: '#fff' }
   })()
 
-  // Password match indicator
   const passwordsMatch = form.confirm.length > 0 && form.password === form.confirm
 
   const inputStyle = (name) => ({
@@ -58,32 +56,28 @@ export default function SignupPage() {
       : name === 'confirm' && form.confirm.length > 0
         ? passwordsMatch ? 'rgba(51,255,136,0.4)' : 'rgba(255,51,51,0.4)'
         : error ? '#ff333322' : '#1a1a1a',
-    padding: '0.85rem 1rem',
+    padding: '0.8rem 0.9rem',
     color: '#fff',
-    fontSize: '0.78rem',
+    fontSize: '0.8rem',
     fontFamily: "'Share Tech Mono', monospace",
-    letterSpacing: '0.06em',
+    letterSpacing: '0.04em',
     transition: 'border-color 0.15s',
     outline: 'none',
     display: 'block',
+    WebkitAppearance: 'none',
+    borderRadius: 0,
   })
 
   const labelStyle = (name) => ({
     display: 'block',
-    fontSize: '0.55rem',
+    fontSize: '0.52rem',
     fontFamily: "'Share Tech Mono', monospace",
-    letterSpacing: '0.18em',
+    letterSpacing: '0.15em',
     textTransform: 'uppercase',
     color: focused === name ? '#888' : '#333',
-    marginBottom: '0.4rem',
+    marginBottom: '0.35rem',
     transition: 'color 0.15s',
   })
-
-  const fields = [
-    { name: 'email',    label: 'Email Address', type: 'email',    placeholder: 'operative@domain.com', autoComplete: 'email' },
-    { name: 'password', label: 'Password',       type: 'password', placeholder: '••••••••••••',         autoComplete: 'new-password' },
-    { name: 'confirm',  label: 'Confirm Password', type: 'password', placeholder: '••••••••••••',       autoComplete: 'new-password' },
-  ]
 
   return (
     <>
@@ -91,95 +85,111 @@ export default function SignupPage() {
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
 
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
+          from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes blink {
           0%, 100% { opacity: 1; }
-          50%       { opacity: 0; }
+          50% { opacity: 0; }
         }
-        .signup-card { animation: fadeUp 0.35s ease forwards; }
+
+        .signup-wrap {
+          min-height: 100vh;
+          min-height: 100dvh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #000;
+          padding: 1rem;
+        }
+
+        .signup-card {
+          width: 100%;
+          max-width: 400px;
+          background: #000;
+          border: 1px solid #1a1a1a;
+          padding: 1.75rem 1.25rem;
+          position: relative;
+          animation: fadeUp 0.3s ease forwards;
+        }
+
+        @media (min-width: 480px) {
+          .signup-card { padding: 2.5rem 2rem; }
+        }
+
+        .signup-submit {
+          width: 100%;
+          padding: 0.85rem;
+          background: transparent;
+          border: 1px solid #fff;
+          color: #fff;
+          font-family: 'Share Tech Mono', monospace;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          font-size: 0.7rem;
+          cursor: pointer;
+          transition: all 0.15s;
+          margin-top: 1.25rem;
+          margin-bottom: 1.5rem;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .signup-submit:active:not(:disabled),
         .signup-submit:hover:not(:disabled) {
-          background: #fff !important;
-          color: #000 !important;
+          background: #fff;
+          color: #000;
         }
         .signup-submit:disabled {
           opacity: 0.4;
           cursor: not-allowed;
         }
-        .signup-link:hover { color: #fff !important; }
+
+        .signup-link:hover,
+        .signup-link:active { color: #fff !important; }
+
+        input { -webkit-appearance: none; border-radius: 0; }
       `}</style>
 
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#000',
-        padding: '1.5rem',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
+      <div className="signup-wrap">
 
         {/* Background grid */}
         <div style={{
-          position: 'absolute', inset: 0,
+          position: 'fixed',
+          inset: 0,
           backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
+            linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px',
           pointerEvents: 'none',
         }} />
 
-        {/* Corner brackets */}
-        {[
-          { top: 0, left: 0,   borderTop: '1px solid #1a1a1a', borderLeft:  '1px solid #1a1a1a' },
-          { top: 0, right: 0,  borderTop: '1px solid #1a1a1a', borderRight: '1px solid #1a1a1a' },
-          { bottom: 0, left: 0,  borderBottom: '1px solid #1a1a1a', borderLeft:  '1px solid #1a1a1a' },
-          { bottom: 0, right: 0, borderBottom: '1px solid #1a1a1a', borderRight: '1px solid #1a1a1a' },
-        ].map((style, i) => (
-          <div key={i} style={{ position: 'absolute', width: 60, height: 60, pointerEvents: 'none', ...style }} />
-        ))}
-
-        {/* Card */}
-        <div className="signup-card" style={{
-          width: '100%',
-          maxWidth: '400px',
-          background: '#000',
-          border: '1px solid #1a1a1a',
-          padding: 'clamp(1.5rem, 5vw, 2.5rem)',
-          position: 'relative',
-          zIndex: 1,
-        }}>
+        <div className="signup-card">
 
           {/* Header */}
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.75rem' }}>
             <div style={{
-              fontSize: '0.55rem',
+              fontSize: '0.52rem',
               fontFamily: "'Share Tech Mono', monospace",
-              letterSpacing: '0.2em',
+              letterSpacing: '0.18em',
               color: '#333',
               textTransform: 'uppercase',
-              marginBottom: '1rem',
+              marginBottom: '0.85rem',
             }}>
               TRILLIONDOLLARCLUB / REGISTER
             </div>
             <h1 style={{
               fontFamily: "'Orbitron', monospace",
-              fontSize: 'clamp(1.3rem, 5vw, 1.75rem)',
+              fontSize: 'clamp(1.2rem, 6vw, 1.65rem)',
               fontWeight: 900,
-              letterSpacing: '0.06em',
+              letterSpacing: '0.05em',
               textTransform: 'uppercase',
-              marginBottom: '0.4rem',
               lineHeight: 1.1,
+              marginBottom: '0.5rem',
             }}>
-              Request
-              <br />
-              Access
+              Request<br />Access
             </h1>
             <div style={{
-              fontSize: '0.65rem',
+              fontSize: '0.6rem',
               fontFamily: "'Share Tech Mono', monospace",
               letterSpacing: '0.1em',
               color: '#333',
@@ -194,12 +204,13 @@ export default function SignupPage() {
             <div style={{
               border: '1px solid rgba(255,51,51,0.3)',
               background: 'rgba(255,51,51,0.04)',
-              padding: '0.65rem 0.9rem',
+              padding: '0.6rem 0.85rem',
               marginBottom: '1.25rem',
-              fontSize: '0.65rem',
+              fontSize: '0.62rem',
               fontFamily: "'Share Tech Mono', monospace",
-              letterSpacing: '0.08em',
+              letterSpacing: '0.06em',
               color: '#ff3333',
+              wordBreak: 'break-word',
             }}>
               ✕ {error.toUpperCase()}
             </div>
@@ -207,86 +218,101 @@ export default function SignupPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
-            {fields.map(({ name, label, type, placeholder, autoComplete }) => (
-              <div key={name} style={{ marginBottom: name === 'confirm' ? '0' : '1rem' }}>
-                <label style={labelStyle(name)}>{label}</label>
-                <input
-                  style={inputStyle(name)}
-                  name={name}
-                  type={type}
-                  value={form[name]}
-                  onChange={handleChange}
-                  onFocus={() => setFocused(name)}
-                  onBlur={() => setFocused(null)}
-                  placeholder={placeholder}
-                  autoComplete={autoComplete}
-                  required
-                  minLength={name !== 'email' ? 6 : undefined}
-                />
 
-                {/* Password strength bar */}
-                {name === 'password' && form.password.length > 0 && (
-                  <div style={{ marginTop: '0.4rem', marginBottom: '0.25rem' }}>
+            {/* Email */}
+            <div style={{ marginBottom: '0.85rem' }}>
+              <label style={labelStyle('email')}>Email Address</label>
+              <input
+                style={inputStyle('email')}
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                onFocus={() => setFocused('email')}
+                onBlur={() => setFocused(null)}
+                placeholder="operative@domain.com"
+                autoComplete="email"
+                inputMode="email"
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div style={{ marginBottom: '0.85rem' }}>
+              <label style={labelStyle('password')}>Password</label>
+              <input
+                style={inputStyle('password')}
+                name="password"
+                type="password"
+                value={form.password}
+                onChange={handleChange}
+                onFocus={() => setFocused('password')}
+                onBlur={() => setFocused(null)}
+                placeholder="••••••••••••"
+                autoComplete="new-password"
+                required
+                minLength={6}
+              />
+              {/* Strength bar */}
+              {form.password.length > 0 && (
+                <div style={{ marginTop: '0.35rem' }}>
+                  <div style={{ height: '2px', background: '#111', position: 'relative', overflow: 'hidden' }}>
                     <div style={{
-                      height: '2px',
-                      background: '#111',
-                      position: 'relative',
-                      overflow: 'hidden',
-                    }}>
-                      <div style={{
-                        position: 'absolute', top: 0, left: 0, height: '100%',
-                        width: strength?.width,
-                        background: strength?.color,
-                        transition: 'width 0.3s, background 0.3s',
-                      }} />
-                    </div>
-                    <div style={{
-                      fontSize: '0.5rem',
-                      fontFamily: "'Share Tech Mono', monospace",
-                      letterSpacing: '0.15em',
-                      color: strength?.color,
-                      marginTop: '0.25rem',
-                      textAlign: 'right',
-                    }}>
-                      {strength?.label}
-                    </div>
+                      position: 'absolute', top: 0, left: 0, height: '100%',
+                      width: strength?.width,
+                      background: strength?.color,
+                      transition: 'width 0.3s, background 0.3s',
+                    }} />
                   </div>
-                )}
-
-                {/* Match indicator */}
-                {name === 'confirm' && form.confirm.length > 0 && (
                   <div style={{
-                    fontSize: '0.5rem',
+                    fontSize: '0.48rem',
                     fontFamily: "'Share Tech Mono', monospace",
-                    letterSpacing: '0.15em',
-                    color: passwordsMatch ? '#33ff88' : '#ff3333',
-                    marginTop: '0.35rem',
+                    letterSpacing: '0.12em',
+                    color: strength?.color,
+                    marginTop: '0.2rem',
                     textAlign: 'right',
                   }}>
-                    {passwordsMatch ? '✓ MATCH' : '✕ NO MATCH'}
+                    {strength?.label}
                   </div>
-                )}
-              </div>
-            ))}
+                </div>
+              )}
+            </div>
+
+            {/* Confirm */}
+            <div>
+              <label style={labelStyle('confirm')}>Confirm Password</label>
+              <input
+                style={inputStyle('confirm')}
+                name="confirm"
+                type="password"
+                value={form.confirm}
+                onChange={handleChange}
+                onFocus={() => setFocused('confirm')}
+                onBlur={() => setFocused(null)}
+                placeholder="••••••••••••"
+                autoComplete="new-password"
+                required
+                minLength={6}
+              />
+              {/* Match indicator */}
+              {form.confirm.length > 0 && (
+                <div style={{
+                  fontSize: '0.48rem',
+                  fontFamily: "'Share Tech Mono', monospace",
+                  letterSpacing: '0.12em',
+                  color: passwordsMatch ? '#33ff88' : '#ff3333',
+                  marginTop: '0.25rem',
+                  textAlign: 'right',
+                }}>
+                  {passwordsMatch ? '✓ MATCH' : '✕ NO MATCH'}
+                </div>
+              )}
+            </div>
 
             <button
               type="submit"
               disabled={loading}
               className="signup-submit"
-              style={{
-                width: '100%',
-                padding: '0.9rem',
-                background: 'transparent',
-                border: '1px solid #fff',
-                color: '#fff',
-                fontSize: '0.7rem',
-                fontFamily: "'Share Tech Mono', monospace",
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                transition: 'all 0.15s',
-                marginTop: '1.5rem',
-                marginBottom: '1.5rem',
-              }}
             >
               {loading ? '— CREATING ACCOUNT —' : '→ REQUEST ACCESS'}
             </button>
@@ -295,16 +321,18 @@ export default function SignupPage() {
           {/* Footer */}
           <div style={{
             borderTop: '1px solid #111',
-            paddingTop: '1.25rem',
+            paddingTop: '1.1rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            gap: '0.5rem',
           }}>
             <span style={{
-              fontSize: '0.6rem',
+              fontSize: '0.55rem',
               fontFamily: "'Share Tech Mono', monospace",
-              letterSpacing: '0.1em',
+              letterSpacing: '0.08em',
               color: '#333',
+              flexShrink: 0,
             }}>
               HAVE CREDENTIALS?
             </span>
@@ -312,14 +340,15 @@ export default function SignupPage() {
               to="/login"
               className="signup-link"
               style={{
-                fontSize: '0.6rem',
+                fontSize: '0.55rem',
                 fontFamily: "'Share Tech Mono', monospace",
-                letterSpacing: '0.12em',
+                letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 color: '#555',
                 borderBottom: '1px solid #222',
                 paddingBottom: '1px',
                 transition: 'color 0.15s',
+                flexShrink: 0,
               }}
             >
               Sign In →
