@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { signOut } from '../../features/auth/authSlice'
@@ -20,6 +20,25 @@ export default function Navbar() {
     setMenuOpen(false)
   }
 
+  // Close drawer when viewport widens to desktop — no listener leak
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 601px)')
+    const handler = (e) => { if (e.matches) setMenuOpen(false) }
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  // Prevent body scroll while drawer is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
+
+  // Close drawer on route change
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [location.pathname])
+
   const navLinks = isAuthenticated
     ? [
         { to: '/dashboard', label: 'Dashboard' },
@@ -33,17 +52,26 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path
 
-  // Close drawer on resize to desktop
-  const handleResize = () => {
-    if (window.innerWidth > 600) setMenuOpen(false)
-  }
-
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', handleResize, { passive: true })
-  }
-
   return (
     <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        @media (max-width: 600px) {
+          .tdc-desktop-nav { display: none !important; }
+          .tdc-burger      { display: flex !important; }
+        }
+
+        /* Smooth active-link hover without JS */
+        .tdc-nav-link:not(.tdc-nav-link--active):hover {
+          color: #aaa !important;
+        }
+        .tdc-exit-btn:hover {
+          border-color: #fff !important;
+          color: #fff !important;
+        }
+      `}</style>
+
       <nav style={{
         position: 'sticky',
         top: 0,
@@ -80,6 +108,7 @@ export default function Navbar() {
             <Link
               key={link.to}
               to={link.to}
+              className={`tdc-nav-link${isActive(link.to) ? ' tdc-nav-link--active' : ''}`}
               style={{
                 padding: '0.35rem 0.8rem',
                 fontSize: '0.62rem',
@@ -92,8 +121,6 @@ export default function Navbar() {
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',
               }}
-              onMouseEnter={e => { if (!isActive(link.to)) e.currentTarget.style.color = '#aaa' }}
-              onMouseLeave={e => { if (!isActive(link.to)) e.currentTarget.style.color = '#444' }}
             >
               {link.label}
             </Link>
@@ -102,6 +129,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <button
               onClick={handleSignOut}
+              className="tdc-exit-btn"
               style={{
                 marginLeft: '0.75rem',
                 padding: '0.35rem 0.8rem',
@@ -112,17 +140,9 @@ export default function Navbar() {
                 fontFamily: "'Share Tech Mono', monospace",
                 letterSpacing: '0.13em',
                 textTransform: 'uppercase',
-                transition: 'all 0.15s',
+                transition: 'border-color 0.15s, color 0.15s',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#fff'
-                e.currentTarget.style.color = '#fff'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#222'
-                e.currentTarget.style.color = '#444'
               }}
             >
               Exit
@@ -155,6 +175,7 @@ export default function Navbar() {
           onClick={() => setMenuOpen(v => !v)}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}
+          aria-controls="tdc-mobile-drawer"
           style={{
             display: 'none',           /* shown via media query */
             background: 'transparent',
@@ -165,11 +186,13 @@ export default function Navbar() {
             fontFamily: "'Share Tech Mono', monospace",
             lineHeight: 1,
             cursor: 'pointer',
-            /* Larger tap target */
+            /* 44×44 minimum tap target */
             minWidth: '44px',
             minHeight: '44px',
             alignItems: 'center',
             justifyContent: 'center',
+            WebkitTapHighlightColor: 'transparent',
+            touchAction: 'manipulation',
           }}
         >
           {menuOpen ? '✕' : '☰'}
@@ -178,6 +201,10 @@ export default function Navbar() {
 
       {/* ── Mobile drawer ── */}
       <div
+        id="tdc-mobile-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
         style={{
           position: 'fixed',
           top: '52px',
@@ -189,21 +216,20 @@ export default function Navbar() {
           borderTop: '1px solid #1a1a1a',
           display: 'flex',
           flexDirection: 'column',
-          padding: '1.5rem',
+          padding: '1.5rem 1.25rem',
           overflowY: 'auto',
           WebkitOverflowScrolling: 'touch',
-          /* animate open/close */
+          /* Slide in/out */
           transform: menuOpen ? 'translateY(0)' : 'translateY(-110%)',
           transition: 'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
           pointerEvents: menuOpen ? 'auto' : 'none',
+          visibility: menuOpen ? 'visible' : 'hidden',
         }}
-        aria-hidden={!menuOpen}
       >
         {navLinks.map(link => (
           <Link
             key={link.to}
             to={link.to}
-            onClick={() => setMenuOpen(false)}
             style={{
               padding: '1.1rem 0',
               fontSize: '0.8rem',
@@ -213,7 +239,7 @@ export default function Navbar() {
               color: isActive(link.to) ? '#fff' : '#444',
               borderBottom: '1px solid #111',
               textDecoration: 'none',
-              /* min tap target height */
+              /* 44px minimum tap target */
               minHeight: '44px',
               display: 'flex',
               alignItems: 'center',
@@ -239,6 +265,8 @@ export default function Navbar() {
                 textTransform: 'uppercase',
                 cursor: 'pointer',
                 minHeight: '44px',
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
               }}
             >
               Exit System
@@ -246,7 +274,6 @@ export default function Navbar() {
           ) : (
             <Link
               to="/signup"
-              onClick={() => setMenuOpen(false)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -272,24 +299,15 @@ export default function Navbar() {
       {menuOpen && (
         <div
           onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 98,
             background: 'transparent',
           }}
-          aria-hidden="true"
         />
       )}
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        @media (max-width: 600px) {
-          .tdc-desktop-nav { display: none !important; }
-          .tdc-burger      { display: flex !important; }
-        }
-      `}</style>
     </>
   )
 }

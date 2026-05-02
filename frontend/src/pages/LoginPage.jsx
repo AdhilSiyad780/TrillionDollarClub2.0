@@ -46,20 +46,32 @@ export default function LoginPage() {
     borderColor: focused === name ? '#fff' : error ? '#ff333344' : '#1a1a1a',
     padding: '0.8rem 0.9rem',
     color: '#fff',
-    fontSize: '0.8rem',
+    /*
+     * font-size >= 16px prevents iOS Safari from zooming the viewport
+     * when an input is focused. Styling feel is preserved via letter-spacing.
+     */
+    fontSize: '16px',
     fontFamily: "'Share Tech Mono', monospace",
     letterSpacing: '0.04em',
     transition: 'border-color 0.15s',
     display: 'block',
     outline: 'none',
     WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    appearance: 'none',
     borderRadius: 0,
+    boxSizing: 'border-box',
   })
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        /* Prevent iOS font scaling */
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(12px); }
@@ -74,40 +86,52 @@ export default function LoginPage() {
           min-height: 100vh;
           min-height: 100dvh;
           display: flex;
-          align-items: center;
+          /* Mobile: top-aligned full-bleed; Desktop: centered card */
+          align-items: flex-start;
           justify-content: center;
           background: #000;
-          padding: 1rem;
+          padding: 0;
         }
 
         .login-card {
           width: 100%;
-          max-width: 400px;
+          max-width: 100%;
           background: #000;
-          border: 1px solid #1a1a1a;
-          padding: 1.75rem 1.25rem;
+          border: none;
+          border-bottom: 1px solid #1a1a1a;
+          padding: 2rem 1.25rem;
           position: relative;
           animation: fadeUp 0.3s ease forwards;
+          min-height: 0; /* let content size the card */
         }
 
-        @media (min-width: 480px) {
-          .login-card { padding: 2.5rem 2rem; }
+        @media (min-width: 560px) {
+          .login-wrap {
+            align-items: center;
+            padding: 1rem;
+          }
+          .login-card {
+            max-width: 420px;
+            border: 1px solid #1a1a1a;
+            padding: 2.5rem 2rem;
+          }
         }
 
         .login-submit {
           width: 100%;
+          min-height: 44px; /* accessible tap target */
           padding: 0.85rem;
           background: transparent;
           border: 1px solid #fff;
           color: #fff;
-          fontSize: 0.7rem;
           font-family: 'Share Tech Mono', monospace;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          transition: all 0.15s;
-          cursor: pointer;
           font-size: 0.7rem;
+          transition: background 0.15s, color 0.15s;
+          cursor: pointer;
           -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
         }
         .login-submit:active:not(:disabled),
         .login-submit:hover:not(:disabled) {
@@ -121,6 +145,7 @@ export default function LoginPage() {
 
         .google-btn {
           width: 100%;
+          min-height: 44px; /* accessible tap target */
           padding: 0.85rem;
           background: #fff;
           border: 1px solid #fff;
@@ -130,21 +155,27 @@ export default function LoginPage() {
           text-transform: uppercase;
           font-size: 0.7rem;
           cursor: pointer;
-          transition: all 0.15s;
+          transition: background 0.15s;
           -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
         }
         .google-btn:active { background: #ddd; }
 
         .login-link:hover,
         .login-link:active { color: #fff !important; }
 
-        /* Remove iOS input styling */
-        input { -webkit-appearance: none; border-radius: 0; }
+        /* Remove all native input styling */
+        input {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          border-radius: 0;
+        }
       `}</style>
 
       <div className="login-wrap">
 
-        {/* Subtle background grid — hidden on very small screens */}
+        {/* Subtle background grid */}
         <div style={{
           position: 'fixed',
           inset: 0,
@@ -154,9 +185,10 @@ export default function LoginPage() {
           `,
           backgroundSize: '40px 40px',
           pointerEvents: 'none',
+          zIndex: 0,
         }} />
 
-        <div className="login-card">
+        <div className="login-card" style={{ position: 'relative', zIndex: 1 }}>
 
           {/* Header */}
           <div style={{ marginBottom: '1.75rem' }}>
@@ -177,7 +209,7 @@ export default function LoginPage() {
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
               lineHeight: 1.1,
-              marginBottom: '0.5rem',
+              margin: '0 0 0.5rem 0',
             }}>
               Access<br />Terminal
             </h1>
@@ -210,7 +242,7 @@ export default function LoginPage() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div style={{ marginBottom: '0.85rem' }}>
               <label style={{
                 display: 'block',
@@ -329,6 +361,8 @@ export default function LoginPage() {
                 paddingBottom: '1px',
                 transition: 'color 0.15s',
                 flexShrink: 0,
+                /* Adequate tap area */
+                padding: '0.5rem 0',
               }}
             >
               Request Access →

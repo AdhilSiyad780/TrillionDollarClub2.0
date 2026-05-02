@@ -58,14 +58,21 @@ export default function SignupPage() {
         : error ? '#ff333322' : '#1a1a1a',
     padding: '0.8rem 0.9rem',
     color: '#fff',
-    fontSize: '0.8rem',
+    /*
+     * font-size must be >= 16px on mobile to prevent iOS auto-zoom on focus.
+     * We use 16px here; the Share Tech Mono feel is preserved via letter-spacing.
+     */
+    fontSize: '16px',
     fontFamily: "'Share Tech Mono', monospace",
     letterSpacing: '0.04em',
     transition: 'border-color 0.15s',
     outline: 'none',
     display: 'block',
     WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    appearance: 'none',
     borderRadius: 0,
+    boxSizing: 'border-box',
   })
 
   const labelStyle = (name) => ({
@@ -84,6 +91,8 @@ export default function SignupPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
 
+        *, *::before, *::after { box-sizing: border-box; }
+
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -93,32 +102,50 @@ export default function SignupPage() {
           50% { opacity: 0; }
         }
 
+        /* Prevent iOS font scaling */
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
         .signup-wrap {
           min-height: 100vh;
           min-height: 100dvh;
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           justify-content: center;
           background: #000;
-          padding: 1rem;
+          padding: 0;
         }
 
+        /* Full-bleed card on mobile, bordered card on desktop */
         .signup-card {
           width: 100%;
-          max-width: 400px;
+          max-width: 100%;
           background: #000;
-          border: 1px solid #1a1a1a;
-          padding: 1.75rem 1.25rem;
+          border: none;
+          border-bottom: 1px solid #1a1a1a;
+          padding: 2rem 1.25rem;
           position: relative;
           animation: fadeUp 0.3s ease forwards;
+          /* Let content define height on mobile — avoids awkward whitespace */
+          min-height: 0;
         }
 
-        @media (min-width: 480px) {
-          .signup-card { padding: 2.5rem 2rem; }
+        @media (min-width: 560px) {
+          .signup-wrap {
+            align-items: center;
+            padding: 1rem;
+          }
+          .signup-card {
+            max-width: 420px;
+            border: 1px solid #1a1a1a;
+            padding: 2.5rem 2rem;
+            border-bottom: 1px solid #1a1a1a;
+          }
         }
 
         .signup-submit {
           width: 100%;
+          /* Minimum 44px tap target height */
+          min-height: 44px;
           padding: 0.85rem;
           background: transparent;
           border: 1px solid #fff;
@@ -128,10 +155,11 @@ export default function SignupPage() {
           text-transform: uppercase;
           font-size: 0.7rem;
           cursor: pointer;
-          transition: all 0.15s;
+          transition: background 0.15s, color 0.15s;
           margin-top: 1.25rem;
           margin-bottom: 1.5rem;
           -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
         }
         .signup-submit:active:not(:disabled),
         .signup-submit:hover:not(:disabled) {
@@ -146,7 +174,13 @@ export default function SignupPage() {
         .signup-link:hover,
         .signup-link:active { color: #fff !important; }
 
-        input { -webkit-appearance: none; border-radius: 0; }
+        /* Remove all native input styling */
+        input {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          border-radius: 0;
+        }
       `}</style>
 
       <div className="signup-wrap">
@@ -161,9 +195,10 @@ export default function SignupPage() {
           `,
           backgroundSize: '40px 40px',
           pointerEvents: 'none',
+          zIndex: 0,
         }} />
 
-        <div className="signup-card">
+        <div className="signup-card" style={{ position: 'relative', zIndex: 1 }}>
 
           {/* Header */}
           <div style={{ marginBottom: '1.75rem' }}>
@@ -185,6 +220,7 @@ export default function SignupPage() {
               textTransform: 'uppercase',
               lineHeight: 1.1,
               marginBottom: '0.5rem',
+              margin: '0 0 0.5rem 0',
             }}>
               Request<br />Access
             </h1>
@@ -217,7 +253,7 @@ export default function SignupPage() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
 
             {/* Email */}
             <div style={{ marginBottom: '0.85rem' }}>
@@ -349,6 +385,8 @@ export default function SignupPage() {
                 paddingBottom: '1px',
                 transition: 'color 0.15s',
                 flexShrink: 0,
+                /* Adequate tap target via padding */
+                padding: '0.5rem 0',
               }}
             >
               Sign In →
