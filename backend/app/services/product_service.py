@@ -27,7 +27,7 @@ async def create_product(data: ProductCreateRequest, created_by: str) -> Product
 
 async def get_products(page=1, page_size=10, search=None, category=None) -> PaginatedProductsResponse:
     db = get_db()
-    query = {"is_active": True}
+    query = {}
     if search:
         query["$text"] = {"$search": search}
     if category:
@@ -57,7 +57,7 @@ async def update_product(product_id: str, data: ProductUpdateRequest) -> Product
     db = get_db()
     if not ObjectId.is_valid(product_id):
         raise HTTPException(status_code=400, detail="Invalid product ID")
-    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    update_data = {k: v for k, v in data.model_dump(exclude_unset=True).items()}
     update_data["updated_at"] = datetime.utcnow()
     result = await db.products.find_one_and_update(
         {"_id": ObjectId(product_id)}, {"$set": update_data}, return_document=True

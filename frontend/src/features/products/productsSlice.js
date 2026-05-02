@@ -28,14 +28,17 @@ export const createProduct = createAsyncThunk('products/create', async (body, { 
   }
 })
 
-export const updateProduct = createAsyncThunk('products/update', async ({ id, updates }, { rejectWithValue }) => {
-  try {
-    const { data } = await api.put(`/api/products/${id}`, updates)
-    return data
-  } catch (err) {
-    return rejectWithValue(err.response?.data?.detail || err.message)
+export const updateProduct = createAsyncThunk(
+  'products/updateProduct',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/products/${id}`, data)
+      return response.data
+    } catch (err) {
+      return rejectWithValue(err.response?.data || 'Update failed')
+    }
   }
-})
+)
 
 export const deleteProduct = createAsyncThunk('products/delete', async (id, { rejectWithValue }) => {
   try {

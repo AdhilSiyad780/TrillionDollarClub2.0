@@ -522,12 +522,37 @@ export default function HomePage() {
                   {/* Image */}
                   <div style={{ position: 'relative', background: '#080808' }}>
                     {p.images?.[0] ? (
-                      <img src={p.images[0]} alt={p.name} style={{ display: 'block', width: '100%', height: 'auto' }} />
+                      <img src={p.images[0]} alt={p.name} style={{
+      display: 'block', width: '100%', height: 'auto',
+      opacity: p.is_active ? 1 : 0.45,  // ← dims image when unavailable
+      transition: 'opacity 0.2s',
+    }} />
                     ) : (
                       <div style={{ height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <span style={{ fontSize: '0.55rem', fontFamily: "'Share Tech Mono', monospace", color: '#1a1a1a', letterSpacing: '0.15em' }}>NO IMAGE</span>
                       </div>
                     )}
+                     {/* ── Unavailable badge ── */}
+  {!p.is_active && (
+    <div style={{
+      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'rgba(0,0,0,0.55)',
+    }}>
+      <span style={{
+        fontSize: '0.55rem',
+        fontFamily: "'Share Tech Mono', monospace",
+        letterSpacing: '0.18em',
+        color: '#ff3333',
+        border: '1px solid rgba(255,51,51,0.4)',
+        padding: '0.25rem 0.6rem',
+        textTransform: 'uppercase',
+        background: 'rgba(0,0,0,0.7)',
+      }}>
+        UNAVAILABLE
+      </span>
+    </div>
+  )}
                     {p.images?.length > 1 && (
                       <div style={{ position: 'absolute', bottom: 6, right: 6, background: 'rgba(0,0,0,0.85)', border: '1px solid #2a2a2a', padding: '0.15rem 0.4rem', fontSize: '0.55rem', fontFamily: "'Share Tech Mono', monospace", color: '#555', letterSpacing: '0.08em' }}>
                         +{p.images.length - 1}
