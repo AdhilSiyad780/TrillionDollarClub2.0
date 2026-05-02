@@ -27,7 +27,7 @@ export default function Navbar() {
         ...(isAdmin ? [{ to: '/admin', label: 'Admin' }] : []),
       ]
     : [
-        { to: '/products', label: 'Products' },
+        { to: '/dashboard', label: 'Dashboard' },
         { to: '/login', label: 'Login' },
       ]
 
