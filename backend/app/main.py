@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.db.database import connect_db, close_db
@@ -12,6 +13,19 @@ async def lifespan(app: FastAPI):
     await close_db()
 
 app = FastAPI(title=settings.APP_NAME, version="1.0.0", lifespan=lifespan)
+
+# ── Handle CORS preflight FIRST before middleware ──
+@app.options("/{rest_of_path:path}")
+async def preflight_handler(rest_of_path: str):
+    return JSONResponse(
+        content={},
+        headers={
+            "Access-Control-Allow-Origin": "https://trilliondollarclub.vercel.app",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+            "Access-Control-Allow-Headers": "Authorization, Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
 
 app.add_middleware(
     CORSMiddleware,
