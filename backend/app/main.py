@@ -69,3 +69,10 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
+@app.get("/debug-cors")
+async def debug_cors():
+    return {
+        "cors_origins": settings.CORS_ORIGINS,
+        "type": str(type(settings.CORS_ORIGINS))
+    }
