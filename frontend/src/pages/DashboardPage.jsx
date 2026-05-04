@@ -264,111 +264,128 @@ export default function HomePage() {
       {/* ════════════════════════════════════════
           BANNER
       ════════════════════════════════════════ */}
-      <section style={{
-        borderBottom: '1px solid #111',
-        padding: 'clamp(3rem, 10vw, 6rem) clamp(1rem, 4vw, 3rem)',
-        position: 'relative',
-        overflow: 'hidden',
+      {/* ════════════════════════════════════════
+    BANNER
+════════════════════════════════════════ */}
+<section style={{
+  borderBottom: '1px solid #111',
+  padding: 'clamp(3rem, 10vw, 6rem) clamp(1rem, 4vw, 3rem)',
+  position: 'relative',
+  overflow: 'hidden',
+}}>
+  {/* Background grid */}
+  <div style={{
+    position: 'absolute', inset: 0,
+    backgroundImage: `
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)
+    `,
+    backgroundSize: '48px 48px',
+    pointerEvents: 'none',
+  }} />
+
+  <div style={{
+    maxWidth: '1100px',
+    margin: '0 auto',
+    position: 'relative',
+    zIndex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+  }}>
+
+    {/* Breadcrumb */}
+    <div style={{
+      fontSize: '0.55rem',
+      fontFamily: "'Share Tech Mono', monospace",
+      letterSpacing: '0.2em',
+      color: '#333',
+      textTransform: 'uppercase',
+      marginBottom: '1.5rem',
+    }}>
+      TRILLIONDOLLARCLUB / HOME
+      {handle && (
+        <span style={{ marginLeft: '1rem', color: '#555' }}>
+          ● {handle.toUpperCase()}
+        </span>
+      )}
+    </div>
+
+    {/* Main title — full white, centered */}
+    <h1 style={{
+      fontFamily: "'Orbitron', monospace",
+      fontSize: 'clamp(2.5rem, 12vw, 7rem)',
+      fontWeight: 900,
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+      lineHeight: 1,
+      color: '#fff',
+      marginBottom: '1.5rem',
+    }}>
+      Trillion<br />Dollar<br />Club
+    </h1>
+
+    {/* Tagline */}
+    <div style={{
+      fontSize: 'clamp(0.65rem, 2vw, 0.8rem)',
+      fontFamily: "'Share Tech Mono', monospace",
+      letterSpacing: '0.15em',
+      color: '#444',
+      textTransform: 'uppercase',
+      marginBottom: '2rem',
+      maxWidth: '480px',
+      lineHeight: 1.8,
+    }}>
+      Premium products. Curated catalogue.
+      <br />
+      No compromise. No noise.
+      <span style={{ animation: 'blink 1s step-end infinite', marginLeft: '2px' }}>_</span>
+    </div>
+
+    {/* CTA row */}
+    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{
+        padding: '0.3rem 0.75rem',
+        border: '1px solid #1a1a1a',
+        fontSize: '0.55rem',
+        fontFamily: "'Share Tech Mono', monospace",
+        letterSpacing: '0.12em',
+        color: '#33ff88',
       }}>
-        {/* Background grid */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)
-          `,
-          backgroundSize: '48px 48px',
-          pointerEvents: 'none',
-        }} />
+        ● LIVE
+      </span>
 
-        <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      {isAuthenticated && isAdmin && (
+        <span style={{
+          padding: '0.3rem 0.75rem',
+          border: '1px solid #fff',
+          fontSize: '0.55rem',
+          fontFamily: "'Share Tech Mono', monospace",
+          letterSpacing: '0.12em',
+          color: '#fff',
+        }}>
+          ⬡ ADMIN
+        </span>
+      )}
 
-          {/* Breadcrumb */}
-          <div style={{
-            fontSize: '0.55rem',
-            fontFamily: "'Share Tech Mono', monospace",
-            letterSpacing: '0.2em',
-            color: '#333',
-            textTransform: 'uppercase',
-            marginBottom: '1.5rem',
-          }}>
-            TRILLIONDOLLARCLUB / HOME
-            {handle && (
-              <span style={{ marginLeft: '1rem', color: '#555' }}>
-                ● {handle.toUpperCase()}
-              </span>
-            )}
-          </div>
-
-          {/* Main title */}
-          <h1 className="banner-title" style={{ marginBottom: '1.5rem' }}>
-            Trillion<br />
-            <span>Dollar</span><br />
-            Club
-          </h1>
-
-          {/* Tagline */}
-          <div style={{
-            fontSize: 'clamp(0.65rem, 2vw, 0.8rem)',
-            fontFamily: "'Share Tech Mono', monospace",
-            letterSpacing: '0.15em',
-            color: '#444',
-            textTransform: 'uppercase',
-            marginBottom: '2rem',
-            maxWidth: '480px',
-            lineHeight: 1.8,
-          }}>
-            Premium products. Curated catalogue.
-            <br />
-            No compromise. No noise.
-            <span style={{ animation: 'blink 1s step-end infinite', marginLeft: '2px' }}>_</span>
-          </div>
-
-          {/* CTA row */}
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            {/* Status badges */}
-            <span style={{
-              padding: '0.3rem 0.75rem',
-              border: '1px solid #1a1a1a',
-              fontSize: '0.55rem',
-              fontFamily: "'Share Tech Mono', monospace",
-              letterSpacing: '0.12em',
-              color: '#33ff88',
-            }}>
-              ● LIVE
-            </span>
-
-            {isAuthenticated && isAdmin && (
-              <span style={{
-                padding: '0.3rem 0.75rem',
-                border: '1px solid #fff',
-                fontSize: '0.55rem',
-                fontFamily: "'Share Tech Mono', monospace",
-                letterSpacing: '0.12em',
-                color: '#fff',
-              }}>
-                ⬡ ADMIN
-              </span>
-            )}
-
-            {!isAuthenticated && (
-              <Link to="/signup" style={{
-                padding: '0.5rem 1.25rem',
-                background: '#fff',
-                color: '#000',
-                fontSize: '0.65rem',
-                fontFamily: "'Share Tech Mono', monospace",
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                border: '1px solid #fff',
-              }}>
-                Join Now →
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
-
+      {!isAuthenticated && (
+        <Link to="/signup" style={{
+          padding: '0.5rem 1.25rem',
+          background: '#fff',
+          color: '#000',
+          fontSize: '0.65rem',
+          fontFamily: "'Share Tech Mono', monospace",
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
+          border: '1px solid #fff',
+        }}>
+          Join Now →
+        </Link>
+      )}
+    </div>
+  </div>
+</section>
       {/* ════════════════════════════════════════
           PRODUCTS
       ════════════════════════════════════════ */}
